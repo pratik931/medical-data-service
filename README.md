@@ -37,7 +37,7 @@ and heartbeat rates in a **PostgreSQL** database and provides RESTful APIs to re
 
 ### **1. Clone the Repository**
 ```sh
-git clone <repository-url>
+git clone https://github.com/pratik931/medical-data-service.git
 cd medical-data-service
 ```
 - Note: Skip this step if you already have the source code
