@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: medical-data-service
+  server:
+    port: ${MEDICAL_DATA_APP_SERVER_PORT}
+  datasource:
+    url: ${MEDICAL_DATA_DB_URL}
+    username: ${MEDICAL_DATA_DB_USERNAME}
+    password: ${MEDICAL_DATA_DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: ${MEDICAL_DATA_DB_DIALECT}
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+logging:
+  level:
+    root: INFO

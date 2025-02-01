@@ -1,0 +1,49 @@
+services:
+  medical_data_service_db:
+    image: postgres:15
+    container_name: medical_data_service_db
+    restart: always
+    environment:
+      # In production, credentials should not be hardcoded like following
+      # but should be fetched from some external secrets manager service, e.g., AWS Secrets Manager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: medical_data_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d medical_data_service"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app_network
+
+  medical-data-service:
+    build: .
+    container_name: medical_data_service
+    restart: always
+    depends_on:
+      medical_data_service_db:
+        condition: service_healthy
+    environment:
+      # In production, we can use AWS SM to inject these as environment variables securely
+      MEDICAL_DATA_DB_URL: jdbc:postgresql://medical_data_service_db:5432/medical_data_service
+      MEDICAL_DATA_DB_USERNAME: postgres
+      MEDICAL_DATA_DB_PASSWORD: postgres
+      MEDICAL_DATA_DB_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      MEDICAL_DATA_APP_SERVER_PORT: 8080
+      # In production, credentials should not be hardcoded like following
+      APP_USERS: '[{"username": "user1", "password": "password1", "roles": ["USER"]}]'
+    ports:
+      - "8080:8080"
+    networks:
+      - app_network
+
+volumes:
+  pg_data:  # Persists PostgreSQL data to prevent data loss on container restart
+
+networks:
+  app_network:  # Isolates services within a private network
